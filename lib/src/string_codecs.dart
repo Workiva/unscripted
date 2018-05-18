@@ -81,7 +81,7 @@ class CamelCaseEncoder extends Converter<List<String>, String> {
   }
 }
 
-final dashesToCamelCase = new SeparatorCodec("-", splitter: new RegExp(r'[_-]'))
+Codec dashesToCamelCase = new SeparatorCodec("-", splitter: new RegExp(r'[_-]'))
     .inverted
     .fuse(new CamelCaseCodec(false));
 

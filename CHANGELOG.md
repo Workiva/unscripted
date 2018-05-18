@@ -1,3 +1,8 @@
+## 0.7.0
+
+  - Increase dependency range of args
+  - Implement strong mode
+
 ## 0.6.2
 
   - Add `name` parameter to `Option` and `Flag` ( #102 )

@@ -6,7 +6,7 @@ import 'dart:collection';
 import 'dart:mirrors';
 import 'dart:io';
 
-import 'package:args/args.dart' show ArgParser, ArgResults;
+import 'package:args/args.dart' show ArgParser;
 import 'package:collection/iterable_zip.dart';
 import 'package:mockable_filesystem/filesystem.dart' as filesystem;
 
@@ -221,7 +221,7 @@ Usage getUsageFromFunction(MethodMirror methodMirror, DeclarationScript script, 
 getParserFromType(TypeMirror typeMirror) {
   if(typeMirror is ClassMirror &&
       typeMirror.declarations.values.any((d) =>
-          d.isStatic && d.simpleName == #parse)) {
+          d is MethodMirror && d.isStatic && d.simpleName == #parse)) {
     return (String item) => typeMirror.invoke(#parse, [item]).reflectee;
   }
   return null;
@@ -360,7 +360,7 @@ getRestParameterIndex(MethodMirror methodMirror) {
 }
 
 MethodMirror getUnnamedConstructor(ClassMirror classMirror) {
-  var constructors = classMirror.declarations.values
+  Iterable<MethodMirror> constructors = classMirror.declarations.values
   .where((d) => d is MethodMirror && d.isConstructor);
 
   return constructors.firstWhere((constructor) =>
@@ -487,12 +487,12 @@ String formatColumns(
 
   formatters = formatters.map((f) => f == null ? (x) => x : f);
   var widths = new IterableZip(cells).map((column) =>
-      column.isEmpty ? null : column.map((s) => s.length).reduce((a, b) => Comparable.compare(a, b) > 0 ? a : b)).toList();
+      column.isEmpty ? null : column.map((s) => s.length).reduce((a, b) => Comparable.compare(a, b) > 0 ? a : b));
   var cellsWithMetadata = cells.map((line) => new IterableZip([line, widths, formatters]));
   var formattedCells = cellsWithMetadata.map((lineCells) => lineCells.map((cellWithMetadata) {
-    var cell = cellWithMetadata[0];
-    var width = cellWithMetadata[1];
-    var formatter = cellWithMetadata[2];
+    String cell = cellWithMetadata[0];
+    int width = cellWithMetadata[1];
+    Function formatter = cellWithMetadata[2];
     return formatter(cell) + (' ' * ((width - cell.length) + separateBy));
   }));
 
