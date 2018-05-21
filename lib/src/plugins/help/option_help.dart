@@ -50,14 +50,14 @@ class OptionHelp {
     return help.splitMapJoin(
         ',',
         onMatch: (match) => textPen(match.group(0)),
-        onNonMatch: (_) => optionPen.toString());
+        onNonMatch: (String nonMatch) => optionPen(nonMatch));
   }
 
   static String helpFormatter(String help) {
     return help.splitMapJoin(
         new RegExp(r'<[^>]+>'),
         onMatch: (match) => optionPen(match.group(0)),
-        onNonMatch: (_) => textPen.toString());
+        onNonMatch: (String nonMatch) => textPen(nonMatch));
   }
 
   /**

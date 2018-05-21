@@ -360,8 +360,8 @@ getRestParameterIndex(MethodMirror methodMirror) {
 }
 
 MethodMirror getUnnamedConstructor(ClassMirror classMirror) {
-  Iterable<MethodMirror> constructors = classMirror.declarations.values
-  .where((d) => d is MethodMirror && d.isConstructor);
+  Iterable<MethodMirror> constructors = new List<MethodMirror>.from(
+    classMirror.declarations.values.where((d) => d is MethodMirror && d.isConstructor));
 
   return constructors.firstWhere((constructor) =>
       constructor.constructorName == const Symbol(''), orElse: () => null);
