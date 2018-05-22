@@ -174,7 +174,7 @@ Iterable<String> _filterCompletions(String partialWord, Iterable<String>
 
 String _COMPLETION = 'completion';
 
-var _installationNames = _installationNamesHelp.keys;
+List<String> _installationNames = _installationNamesHelp.keys;
 // TODO: Replace this with an enum.
 var _installationNamesHelp = {
   'print': 'Print completion script to stdout.',

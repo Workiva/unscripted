@@ -27,7 +27,7 @@ abstract class InvocationMaker {
     return invocationMirror.reflectee;
   }
 
-  _passThrough(passThroughMirror);
+  _passThrough(InstanceMirror passThroughMirror);
 }
 
 class _GetterInvocationMaker extends InvocationMaker {

@@ -330,7 +330,7 @@ CommandInvocation applyUsageToCommandInvocation(Usage usage, CommandInvocation i
   }
 
   List zipParsedArgs(args, parsers, names) {
-    return new IterableZip([args, parsers, names])
+    return new IterableZip([args, parsers, names] as Iterable<Iterable>)
         .map((parts) => parseArg(parts[1], parts[0], parts[2]))
         .toList();
   }
