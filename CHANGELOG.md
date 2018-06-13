@@ -1,3 +1,8 @@
+## 0.7.1
+
+  - Add Dockerfile for Workiva Build
+  - Add aviary.yaml
+
 ## 0.7.0
 
   - Increase dependency range of args
