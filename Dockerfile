@@ -16,4 +16,5 @@ RUN echo "Starting the script sections" && \
 		timeout 5m pub get && \
 		pub run test && \
 		echo "Script sections completed"
+ARG BUILD_ARTIFACTS_PUBSPEC_LOCK=/build/pubspec.lock
 FROM scratch
