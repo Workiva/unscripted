@@ -15,6 +15,8 @@ ADD . /build/
 RUN echo "Starting the script sections" && \
 		timeout 5m pub get && \
 		pub run test && \
+		tar -czvf unscripted.pub.tgz pubspec.yaml lib README.md LICENSE && \
 		echo "Script sections completed"
 ARG BUILD_ARTIFACTS_PUBSPEC_LOCK=/build/pubspec.lock
+ARG BUILD_ARTIFACTS_PUB=/build/unscripted.pub.tgz
 FROM scratch

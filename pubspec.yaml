@@ -1,8 +1,9 @@
 name: unscripted
-version: 0.7.1
+version: 0.7.2
 author: Sean Eagan <seaneagan1@gmail.com>
 description: Declarative command-line interface programming.
 homepage: http://github.com/seaneagan/unscripted
+publish_to: https://pub.workiva.org
 dependencies:
   ansicolor: '>=0.0.9 <0.1.0'
   args: '>=0.11.0 <2.0.0'
