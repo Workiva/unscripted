@@ -1,4 +1,3 @@
-
 Map<String, String> makeEnv(args) {
   var compLine = args.join(' ');
   var cursor = compLine.length;
@@ -6,7 +5,7 @@ Map<String, String> makeEnv(args) {
   var argCount = args.length - 2;
   var compCWord = argCount.toString();
   return {
-    'COMP_LINE' : compLine,
+    'COMP_LINE': compLine,
     'COMP_POINT': compPoint,
     'COMP_CWORD': compCWord
   };

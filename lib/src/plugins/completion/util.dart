@@ -1,4 +1,3 @@
-
 library unscripted.plugins.completion.util;
 
 String unescape(String w) {

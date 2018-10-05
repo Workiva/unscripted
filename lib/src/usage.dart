@@ -1,4 +1,3 @@
-
 library unscripted.usage;
 
 import 'dart:io';
@@ -15,7 +14,6 @@ import 'call_style.dart';
 /// If [parser] has any sub-commands also add a help sub-command,
 /// and recursively add help to all sub-commands' parsers.
 class Usage {
-
   /// The name used to invoke this command.
   final String name = null;
 
@@ -39,11 +37,12 @@ class Usage {
   /// The parser associated with this usage.
   // TODO: Make private.
   ArgParser get parser {
-    if(_parser == null) {
+    if (_parser == null) {
       _parser = _getParser();
     }
     return _parser;
   }
+
   ArgParser _getParser() {
     return new ArgParser(allowTrailingOptions: allowTrailingOptions);
   }
@@ -59,7 +58,7 @@ class Usage {
   List<Positional> _positionals = [];
   List<Positional> _positionalsView;
   List<Positional> get positionals {
-    if(_positionalsView == null) {
+    if (_positionalsView == null) {
       _positionalsView = new UnmodifiableListView(_positionals);
     }
     return _positionalsView;
@@ -70,11 +69,12 @@ class Usage {
   // Options
 
   Map<String, Option> get options {
-    if(_optionsView == null) {
+    if (_optionsView == null) {
       _optionsView = new UnmodifiableMapView(_options);
     }
     return _optionsView;
   }
+
   final Map<String, Option> _options = {};
   Map<String, Option> _optionsView;
 
@@ -111,16 +111,17 @@ class Usage {
     }
     return _optionGroupsView;
   }
+
   final List<OptionGroup> _optionGroups = [];
   List<OptionGroup> _optionGroupsView;
 
   List<String> _commandPath;
   List<String> get commandPath {
-    if(_commandPath == null) {
+    if (_commandPath == null) {
       var path = [];
       var usage = this;
-      while(true) {
-        if(usage.parent == null) {
+      while (true) {
+        if (usage.parent == null) {
           _commandPath = path.reversed.toList();
           break;
         }
@@ -134,11 +135,12 @@ class Usage {
   List<ArgExample> _examples = [];
   List<ArgExample> _examplesView;
   List<ArgExample> get examples {
-    if(_examplesView == null) {
+    if (_examplesView == null) {
       _examplesView = new UnmodifiableListView(_examples);
     }
     return _examplesView;
   }
+
   addExample(ArgExample example) {
     _examples.add(example);
   }
@@ -146,17 +148,20 @@ class Usage {
   Map<String, Usage> _commands = {};
   Map<String, Usage> _commandsView;
   Map<String, Usage> get commands {
-    if(_commandsView == null) {
+    if (_commandsView == null) {
       _commandsView = new UnmodifiableMapView(_commands);
     }
     return _commandsView;
   }
+
   Usage addCommand(String name, [SubCommand command]) {
     var hide = command != null && command.hide != null && command.hide;
-    var allowTrailingOptions = (command != null && command.allowTrailingOptions != null) ?
-        command.allowTrailingOptions :
-        this.allowTrailingOptions;
-    parser.addCommand(name, new ArgParser(allowTrailingOptions: allowTrailingOptions));
+    var allowTrailingOptions =
+        (command != null && command.allowTrailingOptions != null)
+            ? command.allowTrailingOptions
+            : this.allowTrailingOptions;
+    parser.addCommand(
+        name, new ArgParser(allowTrailingOptions: allowTrailingOptions));
     return _commands[name] = new _SubCommandUsage(this, name, hide);
   }
 
@@ -175,26 +180,29 @@ class Usage {
   }
 
   void _validate(CommandInvocation commandInvocation) {
-    var actual = commandInvocation.positionals != null ?
-        commandInvocation.positionals.length : 0;
+    var actual = commandInvocation.positionals != null
+        ? commandInvocation.positionals.length
+        : 0;
 
     throwPositionalCountError(String expectation) {
-      throw new UsageException(usage: this, cause: 'Received $actual positional command-line '
-          'arguments, but $expectation.');
+      throw new UsageException(
+          usage: this,
+          cause: 'Received $actual positional command-line '
+              'arguments, but $expectation.');
     }
 
-    if(actual < minPositionals) {
+    if (actual < minPositionals) {
       throwPositionalCountError('at least $minPositionals required');
     }
 
-    if(maxPositionals != null && actual > maxPositionals) {
+    if (maxPositionals != null && actual > maxPositionals) {
       throwPositionalCountError('at most $maxPositionals allowed');
     }
   }
 
   int get minPositionals {
     var min = positionals.length;
-    if(rest != null && rest.required) {
+    if (rest != null && rest.required) {
       min++;
     }
     return min;
@@ -203,15 +211,14 @@ class Usage {
   int get maxPositionals => rest == null ? positionals.length : null;
 
   Positional positionalAt(int index) {
-    if(!index.isNegative && index < positionals.length) return positionals[index];
-    if(rest != null) return rest;
+    if (!index.isNegative && index < positionals.length)
+      return positionals[index];
+    if (rest != null) return rest;
     return null;
   }
-
 }
 
 class _SubCommandUsage extends Usage {
-
   final Usage parent;
   final String name;
   final bool hide;
@@ -241,11 +248,12 @@ class OptionGroup {
   OptionGroup._(this._usage, {this.title, this.help, this.hide: false});
 
   Map<String, Option> get options {
-    if(_optionsView == null) {
+    if (_optionsView == null) {
       _optionsView = new UnmodifiableMapView(_options);
     }
     return _optionsView;
   }
+
   final Map<String, Option> _options = {};
   Map<String, Option> _optionsView;
 
@@ -256,13 +264,13 @@ class OptionGroup {
 }
 
 class CommandInvocation {
-
   final String name;
   final List positionals;
   final Map<String, dynamic> options;
   final CommandInvocation subCommand;
 
-  CommandInvocation._(this.name, this.positionals, this.options, this.subCommand);
+  CommandInvocation._(
+      this.name, this.positionals, this.options, this.subCommand);
 }
 
 class UsageException {
@@ -275,14 +283,14 @@ class UsageException {
   String toString() {
     var argMesage = arg == null ? '' : ': argument $arg';
     var callStyle = usage.callStyle;
-    if(callStyle == CallStyle.NORMAL) callStyle = CallStyle.SHEBANG;
+    if (callStyle == CallStyle.NORMAL) callStyle = CallStyle.SHEBANG;
     var command = formatCallStyle(callStyle);
     return '$command: error$argMesage: $cause';
   }
 }
 
-CommandInvocation convertArgResultsToCommandInvocation(ArgResults results, ArgParser parser) {
-
+CommandInvocation convertArgResultsToCommandInvocation(
+    ArgResults results, ArgParser parser) {
   var positionals = results.rest;
 
   var options = results.options.fold({}, (options, optionName) {
@@ -294,23 +302,24 @@ CommandInvocation convertArgResultsToCommandInvocation(ArgResults results, ArgPa
 
   CommandInvocation subCommand;
 
-  if(results.command != null) {
-    subCommand =
-        convertArgResultsToCommandInvocation(results.command, parser.commands[results.command.name]);
+  if (results.command != null) {
+    subCommand = convertArgResultsToCommandInvocation(
+        results.command, parser.commands[results.command.name]);
   }
 
-  return new CommandInvocation._(results.name, positionals, options, subCommand);
+  return new CommandInvocation._(
+      results.name, positionals, options, subCommand);
 }
 
-CommandInvocation applyUsageToCommandInvocation(Usage usage, CommandInvocation invocation) {
-
+CommandInvocation applyUsageToCommandInvocation(
+    Usage usage, CommandInvocation invocation) {
   usage._validate(invocation);
 
   var positionalParams = usage.positionals;
   var positionalArgs = invocation.positionals;
   int restParameterIndex;
 
-  if(usage.rest != null) {
+  if (usage.rest != null) {
     restParameterIndex = positionalParams.length;
     positionalArgs = positionalArgs.take(restParameterIndex).toList();
   }
@@ -321,10 +330,10 @@ CommandInvocation applyUsageToCommandInvocation(Usage usage, CommandInvocation i
       positionalParams.map((positional) => positional.valueHelp);
 
   parseArg(parser, arg, name) {
-    if(parser == null || arg == null) return arg;
+    if (parser == null || arg == null) return arg;
     try {
       return parser(arg);
-    } catch(e) {
+    } catch (e) {
       throw new UsageException(usage: usage, arg: name, cause: e);
     }
   }
@@ -335,12 +344,10 @@ CommandInvocation applyUsageToCommandInvocation(Usage usage, CommandInvocation i
         .toList();
   }
 
-  var positionals = zipParsedArgs(
-      positionalArgs,
-      positionalParsers,
-      positionalNames);
+  var positionals =
+      zipParsedArgs(positionalArgs, positionalParsers, positionalNames);
 
-  if(usage.rest != null) {
+  if (usage.rest != null) {
     var rawRest = invocation.positionals.skip(restParameterIndex);
     var rest = zipParsedArgs(
         rawRest,
@@ -349,7 +356,7 @@ CommandInvocation applyUsageToCommandInvocation(Usage usage, CommandInvocation i
     positionals.add(rest);
   }
 
-  var options = <String, dynamic> {};
+  var options = <String, dynamic>{};
 
   usage.options.forEach((optionName, option) {
     var resolvedOptionValue;
@@ -358,21 +365,22 @@ CommandInvocation applyUsageToCommandInvocation(Usage usage, CommandInvocation i
     } else {
       var optionValue = invocation.options[optionName];
       parseValue(value) => parseArg(option.parser, value, optionName);
-      resolvedOptionValue = optionValue is List ?
-          new UnmodifiableListView(optionValue.map(parseValue)) :
-          parseValue(optionValue);
+      resolvedOptionValue = optionValue is List
+          ? new UnmodifiableListView(optionValue.map(parseValue))
+          : parseValue(optionValue);
     }
     options[optionName] = resolvedOptionValue;
   });
 
   CommandInvocation subCommand;
 
-  if(invocation.subCommand != null) {
-    subCommand =
-        applyUsageToCommandInvocation(usage.commands[invocation.subCommand.name], invocation.subCommand);
+  if (invocation.subCommand != null) {
+    subCommand = applyUsageToCommandInvocation(
+        usage.commands[invocation.subCommand.name], invocation.subCommand);
   }
 
-  return new CommandInvocation._(invocation.name, positionals, options, subCommand);
+  return new CommandInvocation._(
+      invocation.name, positionals, options, subCommand);
 }
 
 formatCallStyle(CallStyle callStyle) {
@@ -383,10 +391,14 @@ formatCallStyle(CallStyle callStyle) {
     extension = path.extension(basename);
   }
   var commandName = path.basenameWithoutExtension(basename);
-  switch(callStyle) {
-    case CallStyle.NORMAL: return 'dart $commandName.dart';
-    case CallStyle.SHEBANG: return '$commandName.dart';
-    case CallStyle.SHELL: return commandName;
-    case CallStyle.BAT: return '$commandName.bat';
+  switch (callStyle) {
+    case CallStyle.NORMAL:
+      return 'dart $commandName.dart';
+    case CallStyle.SHEBANG:
+      return '$commandName.dart';
+    case CallStyle.SHELL:
+      return commandName;
+    case CallStyle.BAT:
+      return '$commandName.bat';
   }
 }

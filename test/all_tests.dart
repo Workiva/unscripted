@@ -1,4 +1,3 @@
-
 import 'plugins/all_tests.dart' as plugins;
 import 'script_test.dart' as script;
 import 'invocation_maker_test.dart' as invocation_maker;

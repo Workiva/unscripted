@@ -1,13 +1,10 @@
-
 library string_codecs_test;
 
 import 'package:test/test.dart';
 import 'package:unscripted/src/string_codecs.dart';
 
 main() {
-
   group('SeparatorCodec', () {
-
     SeparatorCodec unit;
 
     setUp(() {
@@ -15,7 +12,6 @@ main() {
     });
 
     group('encode', () {
-
       test('empty', () {
         expect(unit.encode([]), '');
       });
@@ -27,11 +23,9 @@ main() {
       test('multiple', () {
         expect(unit.encode(['a', 'b']), 'a,b');
       });
-
     });
 
     group('decode', () {
-
       test('empty', () {
         expect(unit.decode(''), ['']);
       });
@@ -43,12 +37,10 @@ main() {
       test('multiple', () {
         expect(unit.decode('a b'), ['a', 'b']);
       });
-
     });
   });
 
   group('CamelCaseCodec', () {
-
     CamelCaseCodec unit;
 
     setUp(() {
@@ -56,7 +48,6 @@ main() {
     });
 
     group('encode', () {
-
       test('empty', () {
         expect(unit.encode([]), '');
       });
@@ -68,11 +59,9 @@ main() {
       test('multiple', () {
         expect(unit.encode(['ab', 'cd']), 'abCd');
       });
-
     });
 
     group('decode', () {
-
       test('empty', () {
         expect(unit.decode(''), []);
       });
@@ -84,7 +73,6 @@ main() {
       test('multiple', () {
         expect(unit.decode('ABc'), ['a', 'bc']);
       });
-
     });
   });
 }

@@ -1,4 +1,3 @@
-
 library unscripted.src.plugins.help.util;
 
 import '../../util.dart';
