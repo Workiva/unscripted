@@ -22,8 +22,11 @@ RUN echo "=== Setting up ssh ===" && \
 	chmod 600 /root/.ssh/id_rsa && \
 	eval "$(ssh-agent -s)"  && \
 	ssh-add /root/.ssh/id_rsa
+
 RUN echo "Starting the script sections" && \
 	timeout 5m pub get && \
+	dartanalyzer lib test example && \
+	dartfmt --set-exit-if-changed -n lib test example && \
 	pub run test && \
 	pub run dependency_validator && \
 	tar -czvf unscripted.pub.tgz pubspec.yaml lib README.md LICENSE && \
