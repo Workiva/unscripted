@@ -1,26 +1,20 @@
-
 library io_test;
 
 import 'dart:io';
 
 import 'package:unscripted/unscripted.dart';
 import 'package:unscripted/src/util.dart';
-import 'package:mockable_filesystem/mock_filesystem.dart';
+// import 'package:mockable_filesystem/mock_filesystem.dart';
 import 'package:test/test.dart';
 
-
 main() {
-
   group('io', () {
-
 //    setUp(() {
 //      fileSystem = new MockFileSystem();
 //    });
 
     group('Input', () {
-
       group('stdin', () {
-
         Input unit;
 
         setUp(() {
@@ -37,7 +31,6 @@ main() {
       });
 
       group('file', () {
-
         Input unit;
         File file;
 
@@ -61,9 +54,7 @@ main() {
       });
     });
     group('Output', () {
-
       group('stdin', () {
-
         Output unit;
 
         setUp(() {
@@ -80,7 +71,6 @@ main() {
       });
 
       group('file', () {
-
         Output unit;
         File file;
 
