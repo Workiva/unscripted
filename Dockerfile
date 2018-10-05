@@ -10,8 +10,18 @@ ARG GIT_COMMIT_RANGE
 ARG GIT_HEAD_URL
 ARG GIT_MERGE_HEAD
 ARG GIT_MERGE_BRANCH
+ARG GIT_SSH_KEY
+ARG KNOWN_HOSTS_CONTENT
 WORKDIR /build/
 ADD . /build/
+RUN echo "=== Setting up ssh ===" && \
+	mkdir /root/.ssh && \
+	echo "$KNOWN_HOSTS_CONTENT" > "/root/.ssh/known_hosts" && \
+	echo "$GIT_SSH_KEY" > "/root/.ssh/id_rsa" && \
+	chmod 700 /root/.ssh/ && \
+	chmod 600 /root/.ssh/id_rsa && \
+	eval "$(ssh-agent -s)"  && \
+	ssh-add /root/.ssh/id_rsa
 RUN echo "Starting the script sections" && \
 	timeout 5m pub get && \
 	pub run test && \
