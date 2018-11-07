@@ -7,7 +7,6 @@ import 'dart:io';
 
 import 'package:args/args.dart' show ArgParser;
 import 'package:collection/iterable_zip.dart';
-// import 'package:mockable_filesystem/filesystem.dart' as filesystem;
 
 import '../unscripted.dart';
 import 'script_impl.dart';
