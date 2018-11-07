@@ -1,15 +1,13 @@
-
 library string_codecs;
 
 import 'dart:convert';
 
 class SeparatorCodec extends Codec<List<String>, String> {
-
   Pattern _splitter;
   String _joiner;
 
   factory SeparatorCodec(String joiner, {Pattern splitter}) {
-    if(splitter == null) splitter = joiner;
+    if (splitter == null) splitter = joiner;
     return new SeparatorCodec._(joiner, splitter);
   }
 
@@ -37,7 +35,6 @@ class Joiner extends Converter<List<String>, String> {
 }
 
 class CamelCaseCodec extends Codec<List<String>, String> {
-
   final bool _capitalizeFirst;
 
   CamelCaseCodec(this._capitalizeFirst);
@@ -50,7 +47,6 @@ class CamelCaseCodec extends Codec<List<String>, String> {
 }
 
 class CamelCaseDecoder extends Converter<String, List<String>> {
-
   final bool _capitalizeFirst;
 
   CamelCaseDecoder(this._capitalizeFirst);
@@ -59,38 +55,34 @@ class CamelCaseDecoder extends Converter<String, List<String>> {
     var segment = new RegExp(r'.[^A-Z]*');
     var matches = segment.allMatches(input);
     return matches
-        .map((Match match) =>
-            withCapitalization(
-                match.input.substring(match.start, match.end),
-                false))
+        .map((Match match) => withCapitalization(
+            match.input.substring(match.start, match.end), false))
         .toList();
   }
 }
 
 class CamelCaseEncoder extends Converter<List<String>, String> {
-
   final bool _capitalizeFirst;
 
   CamelCaseEncoder(this._capitalizeFirst);
 
   String convert(List<String> input) {
-    var upperCamelCase = input
-        .map((item) => withCapitalization(item, true))
-        .join("");
+    var upperCamelCase =
+        input.map((item) => withCapitalization(item, true)).join("");
     return withCapitalization(upperCamelCase, _capitalizeFirst);
   }
 }
 
-final Codec dashesToCamelCase = new SeparatorCodec("-", splitter: new RegExp(r'[_-]'))
-    .inverted
-    .fuse(new CamelCaseCodec(false));
+final Codec dashesToCamelCase =
+    new SeparatorCodec("-", splitter: new RegExp(r'[_-]'))
+        .inverted
+        .fuse(new CamelCaseCodec(false));
 
 // Upper-case or lower-case the first charater of a String.
 String withCapitalization(String s, bool capitalized) {
-  if(s.isEmpty || capitalized == null) return s;
+  if (s.isEmpty || capitalized == null) return s;
   var firstLetter = s[0];
-  firstLetter = capitalized ?
-      firstLetter.toUpperCase() :
-      firstLetter.toLowerCase();
+  firstLetter =
+      capitalized ? firstLetter.toUpperCase() : firstLetter.toLowerCase();
   return firstLetter + s.substring(1);
 }

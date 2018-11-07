@@ -1,4 +1,3 @@
-
 library unscripted.plugins.help;
 
 import 'dart:convert';
@@ -20,47 +19,40 @@ part 'usage_formatter.dart';
 const _HELP = 'help';
 
 class Help extends Plugin {
-
   const Help();
 
   updateUsage(Usage usage) {
-
     usage.commands.values.forEach(updateUsage);
 
-    if(!usage.options.containsKey(_HELP)) {
+    if (!usage.options.containsKey(_HELP)) {
       usage.addOption(new Flag(
-        name: _HELP,
-        abbr: 'h',
-        help: 'Print this usage information.',
-        negatable: false));
+          name: _HELP,
+          abbr: 'h',
+          help: 'Print this usage information.',
+          negatable: false));
     }
 
-    if(usage.commands.isNotEmpty && !usage.commands.containsKey(_HELP)){
+    if (usage.commands.isNotEmpty && !usage.commands.containsKey(_HELP)) {
       // TODO: This should be an optional positional if/when that is supported.
-      usage.addCommand(_HELP, new SubCommand(hide: true))..addPositional(new Positional(allowed: usage.commands.keys.toList()..remove(_HELP)));
+      usage.addCommand(_HELP, new SubCommand(hide: true))
+        ..addPositional(new Positional(
+            allowed: usage.commands.keys.toList()..remove(_HELP)));
     }
   }
 
-  bool onParse(
-      Usage usage,
-      CommandInvocation commandInvocation,
-      Map<String, String> environment,
-      bool isWindows) {
+  bool onParse(Usage usage, CommandInvocation commandInvocation,
+      Map<String, String> environment, bool isWindows) {
     var path = _getHelpPath(commandInvocation);
-    if(path != null) {
-      var helpUsage = path
-          .fold(usage, (usage, subCommand) =>
-              usage.commands[subCommand]);
+    if (path != null) {
+      var helpUsage =
+          path.fold(usage, (usage, subCommand) => usage.commands[subCommand]);
       _printHelp(helpUsage, null, isWindows);
       return false;
     }
     return true;
   }
 
-  bool onError(
-      Usage usage,
-      error,
-      bool isWindows) {
+  bool onError(Usage usage, error, bool isWindows) {
     _printHelp(usage, error, isWindows);
     exitCode = 2;
     return false;
@@ -72,7 +64,7 @@ class Help extends Plugin {
   _printHelp(Usage helpUsage, error, isWindows) {
     var isError = error != null;
     var sink = stdout;
-    if(isError) {
+    if (isError) {
       sink = stderr;
       sink.writeln();
       sink.writeln(errorPen(error.toString()));
@@ -86,13 +78,13 @@ class Help extends Plugin {
   List<String> _getHelpPath(CommandInvocation commandInvocation) {
     var path = [];
     var subCommandInvocation = commandInvocation;
-    while(true) {
-      if(subCommandInvocation.options.containsKey(_HELP) &&
+    while (true) {
+      if (subCommandInvocation.options.containsKey(_HELP) &&
           subCommandInvocation.options[_HELP]) return path;
-      if(subCommandInvocation.subCommand == null) return null;
-      if(subCommandInvocation.subCommand.name == _HELP) {
+      if (subCommandInvocation.subCommand == null) return null;
+      if (subCommandInvocation.subCommand.name == _HELP) {
         var helpCommand = subCommandInvocation.subCommand;
-        if(helpCommand.positionals.isNotEmpty) {
+        if (helpCommand.positionals.isNotEmpty) {
           path.add(helpCommand.positionals.first);
         }
         return path;
@@ -102,5 +94,4 @@ class Help extends Plugin {
     }
     return path;
   }
-
 }
