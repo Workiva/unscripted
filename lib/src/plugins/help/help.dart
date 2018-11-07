@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ansicolor/ansicolor.dart';
-import 'package:supports_color/supports_color.dart';
 
 import '../../../unscripted.dart';
 import '../../plugin.dart';
@@ -73,7 +72,7 @@ class Help extends Plugin {
   }
 
   UsageFormatter _getUsageFormatter(Usage usage, bool isWindows) =>
-      new TerminalUsageFormatter(usage, supportsColor);
+      new TerminalUsageFormatter(usage, true);
 
   List<String> _getHelpPath(CommandInvocation commandInvocation) {
     var path = [];
