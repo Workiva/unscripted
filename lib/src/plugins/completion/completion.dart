@@ -168,8 +168,16 @@ Future<String> _getCompletionOutput(Usage usage, CommandLine commandLine) {
   });
 }
 
-Iterable<String> _expandCompletions(Iterable completions) => completions
-    .map((c) => (c is Iterable) ? c.map(escape).join(" ") : escape(c));
+Iterable<String> _expandCompletions(Iterable<String> completions) {
+  String words(Object o) {
+    if (o is Iterable) {
+      return o.map((s) => escape(s.toString())).join(' ');
+    }
+    return escape(o.toString());
+  }
+
+  return completions.map(words);
+}
 
 Iterable<String> _filterCompletions(
     String partialWord, Iterable<String> completions) {
