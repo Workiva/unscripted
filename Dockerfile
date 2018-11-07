@@ -1,6 +1,7 @@
 FROM google/dart:2.0.0 as build
 WORKDIR /build/
 ADD . /build/
+ENV TERM=xterm-256color
 RUN echo "Starting Dart 2 script sections" && \
 	timeout 5m pub get && \
 	dartanalyzer lib test example && \
