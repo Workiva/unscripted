@@ -13,6 +13,7 @@ ARG GIT_MERGE_BRANCH
 WORKDIR /build/
 ADD . /build/
 RUN echo "Starting the script sections" && \
+		dartfmt --set-exit-if-changed -n lib test tool example && \
 		timeout 5m pub get && \
 		pub run test && \
 		tar -czvf unscripted.pub.tgz pubspec.yaml lib README.md LICENSE && \
