@@ -4,21 +4,16 @@ import 'dart:io';
 
 import 'package:unscripted/unscripted.dart';
 import 'package:unscripted/src/util.dart';
-// import 'package:mockable_filesystem/mock_filesystem.dart';
 import 'package:test/test.dart';
 
 main() {
   group('io', () {
-//    setUp(() {
-//      fileSystem = new MockFileSystem();
-//    });
-
     group('Input', () {
       group('stdin', () {
         Input unit;
 
         setUp(() {
-          unit = parseInput('-', fileSystem: fileSystem);
+          unit = parseInput('-');
         });
 
         test('stream', () {
@@ -32,12 +27,9 @@ main() {
 
       group('file', () {
         Input unit;
-        File file;
 
         setUp(() {
-          file = fileSystem.getFile('foo.txt');
-          file.writeAsStringSync('foo');
-          unit = parseInput('foo.txt', fileSystem: fileSystem);
+          unit = parseInput('test/fixtures/foo.txt');
         });
 
         test('stream', () {
@@ -47,10 +39,6 @@ main() {
         test('path', () {
           expect(unit.path, endsWith('foo.txt'));
         });
-
-        tearDown(() {
-          return file.delete();
-        });
       });
     });
     group('Output', () {
@@ -58,7 +46,7 @@ main() {
         Output unit;
 
         setUp(() {
-          unit = parseOutput('-', fileSystem: fileSystem);
+          unit = parseOutput('-');
         });
 
         test('stream', () {
@@ -73,11 +61,11 @@ main() {
       group('file', () {
         Output unit;
         File file;
-
+        String filename = 'test/fixtures/bar.txt';
         setUp(() {
-          file = fileSystem.getFile('foo.txt');
-          file.writeAsStringSync('foo');
-          unit = parseOutput('foo.txt', fileSystem: fileSystem);
+          file = new File(filename);
+          file.createSync();
+          unit = parseOutput(filename);
         });
 
         test('sink', () {
@@ -88,7 +76,7 @@ main() {
         });
 
         test('path', () {
-          expect(unit.path, endsWith('foo.txt'));
+          expect(unit.path, endsWith('bar.txt'));
         });
 
         tearDown(() {

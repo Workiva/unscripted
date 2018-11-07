@@ -397,27 +397,20 @@ convertCommandInvocationToInvocation(CommandInvocation commandInvocation,
   return new InvocationMaker.method(memberName, positionals, named).invocation;
 }
 
-parseInput(String arg, {filesystem.FileSystem fileSystem}) {
-  if (fileSystem == null) {
-    fileSystem = filesystem.fileSystem;
-  }
+parseInput(String arg) {
   return _parseIOArg(arg, stdin, (stdin) => new _StdInput(stdin),
-      (file) => new _FileInput(file), fileSystem);
+      (file) => new _FileInput(file));
 }
 
-parseOutput(String arg, {filesystem.FileSystem fileSystem}) {
-  if (fileSystem == null) {
-    fileSystem = filesystem.fileSystem;
-  }
+parseOutput(String arg) {
   return _parseIOArg(arg, stdout, (stdout) => new _StdOutput(stdout),
-      (file) => new _FileOutput(file), fileSystem);
+      (file) => new _FileOutput(file));
 }
 
-_parseIOArg(String arg, stdio, convertStdio(stdio), convertFile(file),
-    filesystem.FileSystem fileSystem) {
+_parseIOArg(String arg, stdio, convertStdio(stdio), convertFile(file)) {
   if (arg == '-') return convertStdio(stdio);
 
-  var file = fileSystem.getFile(arg);
+  var file = new File(arg);
 
   if (!file.existsSync()) {
     throw 'File path does not exist or is not a file: ${file.path}';
