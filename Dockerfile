@@ -5,7 +5,7 @@ RUN echo "Starting Dart 2 script sections" && \
 	timeout 5m pub get && \
 	dartanalyzer lib test example && \
 	pub run test test/all_tests.dart -p vm  && \
-	pub run dependency_validator -i build_runner && \
+	pub run dependency_validator && \
 	echo "Dart 2 Script sections completed"
 
 FROM google/dart:1.24.3
