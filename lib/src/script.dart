@@ -1,4 +1,3 @@
-
 part of unscripted;
 
 /// Represents a command-line script.
@@ -90,7 +89,6 @@ part of unscripted;
 /// dash-erized command-line equivalents.  For example, `fooBar` would map to
 /// `foo-bar`.
 abstract class Script {
-
   factory Script(model) {
     if (model is Function) return new FunctionScript(model);
     if (model is Type) return new ClassScript(model);
@@ -112,11 +110,8 @@ abstract class Script {
   /// treated as an error, and the help text is displayed.  The terminal method
   /// call's return value is captured, and if a future, resolved to a
   /// completion value.  A future for this value is then returned.
-  Future execute(
-      List<String> arguments,
-      {Map<String, String> environment,
-       bool isWindows});
-
+  Future execute(List<String> arguments,
+      {Map<String, String> environment, bool isWindows});
 }
 
 @Deprecated('Use `new Script(model)` instead.')

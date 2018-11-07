@@ -1,4 +1,3 @@
-
 library unscripted.tool.grind;
 
 import 'dart:io';
@@ -17,18 +16,20 @@ test() => new TestRunner().testAsync();
 coverage() {
   if (Platform.environment.containsKey('CI') &&
       Platform.environment['TRAVIS_DART_VERSION'] == 'stable') {
-
     var coverageTokenVar = 'COVERALLS_TOKEN';
     final String coverageToken = Platform.environment[coverageTokenVar];
     if (coverageToken == null) {
       log('Skipping, code coverage environment variable "$coverageTokenVar" is not defined.');
     }
 
-    new PubApp.global('dart_coveralls').run(
-      ['report',
-       '--token', coverageToken,
-       '--retry', '3',
-       'test/all_tests.dart']);
+    new PubApp.global('dart_coveralls').run([
+      'report',
+      '--token',
+      coverageToken,
+      '--retry',
+      '3',
+      'test/all_tests.dart'
+    ]);
   } else {
     // TODO: Run code coverage locally and output to console.
     //       Just skip uploading to coveralls.

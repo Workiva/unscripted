@@ -1,4 +1,3 @@
-
 library unscripted.completion;
 
 import 'dart:async';
@@ -14,7 +13,6 @@ import 'usage_completion.dart';
 import 'util.dart';
 
 class Completion extends Plugin {
-
   const Completion();
 
   CompletionAdapter _getAdapter(Usage usage) => new CompletionAdapter(usage);
@@ -23,15 +21,14 @@ class Completion extends Plugin {
     _getAdapter(usage).updateUsage(usage);
   }
 
-  bool onParse(Usage usage, CommandInvocation commandInvocation, Map<String,
-      String> environment, bool isWindows) {
-    return _getAdapter(usage).onParse(usage, commandInvocation, environment,
-        isWindows);
+  bool onParse(Usage usage, CommandInvocation commandInvocation,
+      Map<String, String> environment, bool isWindows) {
+    return _getAdapter(usage)
+        .onParse(usage, commandInvocation, environment, isWindows);
   }
 }
 
 abstract class CompletionAdapter {
-
   factory CompletionAdapter(Usage usage) {
     if (usage.commands.isEmpty) return new CompletionOptionAdapter();
     return new CompletionCommandAdapter();
@@ -41,9 +38,10 @@ abstract class CompletionAdapter {
 
   updateUsage(Usage usage);
   String _formatInterfaceToken(String name);
-  bool onParse(Usage usage, CommandInvocation commandInvocation, Map<String,
-      String> environment, bool isWindows) {
-    var completionCommandInvocation = _getCompletionCommandInvocation(commandInvocation);
+  bool onParse(Usage usage, CommandInvocation commandInvocation,
+      Map<String, String> environment, bool isWindows) {
+    var completionCommandInvocation =
+        _getCompletionCommandInvocation(commandInvocation);
     if (completionCommandInvocation != null) {
       if (usage.callStyle == CallStyle.NORMAL) {
         var ENOTSUP = 252;
@@ -57,29 +55,31 @@ abstract class CompletionAdapter {
     }
     return true;
   }
-  CommandInvocation _getCompletionCommandInvocation(CommandInvocation
-      commandInvocation);
-  Future _complete(Usage usage, CommandInvocation commandInvocation, {bool
-      isWindows, Map<String, String> environment}) => new Future.sync(() {
 
-    if (environment == null) environment = Platform.environment;
-    var args = commandInvocation.positionals;
-    var commandLine = new CommandLine(args, environment: environment);
-    if (commandLine == null) {
-      _handleCompletionScript(usage, commandInvocation);
-    } else {
-      // "Plumbing mode"
-      _getCompletionOutput(usage, commandLine).then((String output) {
-        if (output.isNotEmpty) {
-          print(output);
+  CommandInvocation _getCompletionCommandInvocation(
+      CommandInvocation commandInvocation);
+  Future _complete(Usage usage, CommandInvocation commandInvocation,
+          {bool isWindows, Map<String, String> environment}) =>
+      new Future.sync(() {
+        if (environment == null) environment = Platform.environment;
+        var args = commandInvocation.positionals;
+        var commandLine = new CommandLine(args, environment: environment);
+        if (commandLine == null) {
+          _handleCompletionScript(usage, commandInvocation);
+        } else {
+          // "Plumbing mode"
+          _getCompletionOutput(usage, commandLine).then((String output) {
+            if (output.isNotEmpty) {
+              print(output);
+            }
+          });
         }
       });
-    }
-  });
   _handleCompletionScript(Usage usage, CommandInvocation commandInvocation) {
     var commandToComplete = formatCallStyle(usage.callStyle);
     var installationCommand = _getInstallationName(commandInvocation);
-    var completionSyntax = '${_getCompletionSyntax()}${_completionSeparator}print';
+    var completionSyntax =
+        '${_getCompletionSyntax()}${_completionSeparator}print';
     switch (installationCommand) {
       case 'print':
         print(getScriptOutput(commandToComplete, completionSyntax));
@@ -92,19 +92,19 @@ abstract class CompletionAdapter {
         break;
     }
   }
+
   String _getCompletionSyntax() => _formatInterfaceToken(_COMPLETION);
   String get _completionSeparator;
   String _getInstallationName(CommandInvocation commandInvocation);
 }
 
 class CompletionCommandAdapter extends CompletionAdapter {
-
   CompletionCommandAdapter() : super._();
 
   updateUsage(Usage usage) {
     var completionCommand = usage.addCommand(_COMPLETION)
-        ..description = 'Tab completion for this command.'
-        ..rest = new Rest(help: 'Used internally by the completion script');
+      ..description = 'Tab completion for this command.'
+      ..rest = new Rest(help: 'Used internally by the completion script');
 
     _installationNamesHelp.forEach((name, help) {
       completionCommand.addCommand(name)..description = help;
@@ -113,24 +113,28 @@ class CompletionCommandAdapter extends CompletionAdapter {
 
   String _formatInterfaceToken(String name) => name;
 
-  CommandInvocation _getCompletionCommandInvocation(CommandInvocation
-      commandInvocation) {
+  CommandInvocation _getCompletionCommandInvocation(
+      CommandInvocation commandInvocation) {
     var baseCompletionCommand = commandInvocation.subCommand;
-    if (baseCompletionCommand != null && baseCompletionCommand.name == _COMPLETION) {
+    if (baseCompletionCommand != null &&
+        baseCompletionCommand.name == _COMPLETION) {
       var subCompletionCommand = baseCompletionCommand.subCommand;
-      return subCompletionCommand == null ? baseCompletionCommand : subCompletionCommand;
+      return subCompletionCommand == null
+          ? baseCompletionCommand
+          : subCompletionCommand;
     }
     return null;
   }
+
   String _getInstallationName(CommandInvocation commandInvocation) {
-    if(commandInvocation.name == _COMPLETION) return 'print';
+    if (commandInvocation.name == _COMPLETION) return 'print';
     return commandInvocation.name;
   }
+
   final String _completionSeparator = ' ';
 }
 
 class CompletionOptionAdapter extends CompletionAdapter {
-
   CompletionOptionAdapter() : super._();
 
   updateUsage(Usage usage) {
@@ -142,31 +146,33 @@ class CompletionOptionAdapter extends CompletionAdapter {
 
   String _formatInterfaceToken(String name) => '--$name';
 
-  CommandInvocation _getCompletionCommandInvocation(CommandInvocation
-      commandInvocation) {
-      return commandInvocation.options[_COMPLETION] == null ?
-          null :
-          commandInvocation;
+  CommandInvocation _getCompletionCommandInvocation(
+      CommandInvocation commandInvocation) {
+    return commandInvocation.options[_COMPLETION] == null
+        ? null
+        : commandInvocation;
   }
+
   String _getInstallationName(CommandInvocation commandInvocation) {
     return commandInvocation.options[_COMPLETION];
   }
+
   final String _completionSeparator = '=';
 }
 
 Future<String> _getCompletionOutput(Usage usage, CommandLine commandLine) {
   return getUsageCompletions(usage, commandLine).then((completions) {
-    completions = _filterCompletions(commandLine.partialWord,
-        _expandCompletions(completions));
+    completions = _filterCompletions(
+        commandLine.partialWord, _expandCompletions(completions));
     return completions.join('\n');
   });
 }
 
-Iterable<String> _expandCompletions(Iterable completions) => completions.map((c)
-    => (c is Iterable) ? c.map(escape).join(" ") : escape(c));
+Iterable<String> _expandCompletions(Iterable completions) => completions
+    .map((c) => (c is Iterable) ? c.map(escape).join(" ") : escape(c));
 
-Iterable<String> _filterCompletions(String partialWord, Iterable<String>
-    completions) {
+Iterable<String> _filterCompletions(
+    String partialWord, Iterable<String> completions) {
   return completions;
 //  return partialWord == null ? completions : completions.where((c) => unescape(c
 //      ).startsWith(partialWord));

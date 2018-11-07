@@ -1,4 +1,3 @@
-
 library invocation_maker_test;
 
 import 'package:unscripted/src/invocation_maker.dart';
@@ -6,7 +5,6 @@ import 'package:test/test.dart';
 
 main() {
   group('InvocationMaker', () {
-
     test('getter', () {
       var unit = new InvocationMaker.getter(#foo);
       var invocation = unit.invocation;
