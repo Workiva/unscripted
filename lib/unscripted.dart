@@ -1,4 +1,3 @@
-
 /// Design command line interfaces through normal programming interfaces
 /// annotated with command line specific metadata.
 library unscripted;

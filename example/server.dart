@@ -1,5 +1,4 @@
 #!/usr/bin/env dart
-
 import 'dart:io';
 
 import 'package:unscripted/unscripted.dart';
@@ -8,17 +7,15 @@ import 'package:path/path.dart' as path;
 main(arguments) => new Script(Server).execute(arguments);
 
 class Server {
-
   final String configPath;
 
-  @Command(
-      help: 'Manages a server',
-      plugins: const [const Completion()])
+  @Command(help: 'Manages a server', plugins: const [const Completion()])
   Server({@Option(allowed: _getSamePrefixPaths) this.configPath: 'config.xml'});
 
   @SubCommand(help: 'Start the server')
   @ArgExample('foo/bar --clean')
-  start(@Positional(help: 'Top-level dir to deploy.') String context, {bool clean: false}) {
+  start(@Positional(help: 'Top-level dir to deploy.') String context,
+      {bool clean: false}) {
     print('''
 Starting the server.
 Config path: $configPath''');
@@ -28,14 +25,13 @@ Config path: $configPath''');
   stop() {
     print('Stopping the server.');
   }
-
 }
 
 Iterable<String> _getSamePrefixPaths(String p) {
-
   var dirname = path.basename(p).isEmpty ? p : path.dirname(p);
   var dir = new Directory(dirname);
-  return dir.listSync()
+  return dir
+      .listSync()
       .map((fse) => path.basename(fse.path))
       .where((basename) => basename.startsWith(path.basename(p)))
       .map((basename) => path.join(dirname, basename));

@@ -1,4 +1,3 @@
-
 import 'package:ansicolor/ansicolor.dart';
 
 AnsiPen namePen = new AnsiPen()..xterm(203);

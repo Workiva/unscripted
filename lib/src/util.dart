@@ -1,4 +1,3 @@
-
 library unscripted.src.util;
 
 import 'dart:async';
@@ -35,31 +34,30 @@ class BaseCommand extends HelpAnnotation {
 }
 
 Rest getRestFromMethod(MethodMirror method) {
-  var lastParameter = method.parameters.lastWhere(
-      (parameter) => !parameter.isOptional,
-      orElse: () => null);
-  if(lastParameter != null) {
-    Rest rest = getFirstMetadataMatch(lastParameter,
-        (metadata) => metadata is Rest);
+  var lastParameter = method.parameters
+      .lastWhere((parameter) => !parameter.isOptional, orElse: () => null);
+  if (lastParameter != null) {
+    Rest rest =
+        getFirstMetadataMatch(lastParameter, (metadata) => metadata is Rest);
 
     var restName = getDefaultPositionalName(lastParameter.simpleName);
     var type = lastParameter.type;
     var parserFromTypeArgument;
-    if(type.originalDeclaration == reflectClass(List) &&
-       type.typeArguments.isNotEmpty) {
+    if (type.originalDeclaration == reflectClass(List) &&
+        type.typeArguments.isNotEmpty) {
       parserFromTypeArgument = getParserFromType(type.typeArguments.single);
     }
 
-    if(rest != null) {
+    if (rest != null) {
       var parser = rest.parser;
-      if(parser == null) {
+      if (parser == null) {
         parser = parserFromTypeArgument;
       }
-      if(rest.valueHelp != null) {
+      if (rest.valueHelp != null) {
         restName = rest.valueHelp;
       }
       var allowed;
-      if(rest.allowed != null) {
+      if (rest.allowed != null) {
         allowed = rest.allowed;
       }
       rest = new Rest(
@@ -68,7 +66,7 @@ Rest getRestFromMethod(MethodMirror method) {
           help: rest.help,
           valueHelp: restName,
           parser: parser);
-    } else if(parserFromTypeArgument != null) {
+    } else if (parserFromTypeArgument != null) {
       rest = new Rest(valueHelp: restName, parser: parserFromTypeArgument);
     }
 
@@ -82,9 +80,9 @@ getDefaultPositionalName(Symbol symbol) {
   // return MirrorSystem.getName(symbol).toUpperCase();
 }
 
-Usage getUsageFromFunction(MethodMirror methodMirror, DeclarationScript script, {Usage usage}) {
-
-  if(usage == null) usage = new Usage();
+Usage getUsageFromFunction(MethodMirror methodMirror, DeclarationScript script,
+    {Usage usage}) {
+  if (usage == null) usage = new Usage();
   script.usageOptionParameterMap[usage] = {};
   script.usageOptionGroupParameterMap[usage] = {};
 
@@ -94,60 +92,65 @@ Usage getUsageFromFunction(MethodMirror methodMirror, DeclarationScript script, 
 
   var parameters = methodMirror.parameters;
 
-  var required = parameters
-      .where((parameter) => !parameter.isOptional).toList();
-  if(usage.rest != null) required.removeLast();
+  var required =
+      parameters.where((parameter) => !parameter.isOptional).toList();
+  if (usage.rest != null) required.removeLast();
 
   var positionals = required.map((parameter) {
-    Positional positional = getFirstMetadataMatch(
-        parameter, (metadata) => metadata is Positional);
+    Positional positional =
+        getFirstMetadataMatch(parameter, (metadata) => metadata is Positional);
 
     String positionalName = getDefaultPositionalName(parameter.simpleName);
     String positionalHelp;
     var parser;
     var allowed;
 
-    if(positional != null) {
-      if(positional.valueHelp != null) {
+    if (positional != null) {
+      if (positional.valueHelp != null) {
         positionalName = positional.valueHelp;
       }
-      if(positional.allowed != null) {
+      if (positional.allowed != null) {
         allowed = positional.allowed;
       }
       positionalHelp = positional.help;
       parser = positional.parser;
     }
 
-    if(parser == null) {
+    if (parser == null) {
       parser = getParserFromType(parameter.type);
     }
 
-    return new Positional(allowed: allowed, valueHelp: positionalName, help: positionalHelp, parser: parser);
+    return new Positional(
+        allowed: allowed,
+        valueHelp: positionalName,
+        help: positionalHelp,
+        parser: parser);
   });
 
-  positionals.forEach((positional) =>
-      usage.addPositional(positional));
+  positionals.forEach((positional) => usage.addPositional(positional));
 
   OptionGroup currentGroup = usage.optionGroups.first;
 
   parameters.where((parameter) => parameter.isNamed).forEach((parameter) {
-
     var parameterName = MirrorSystem.getName(parameter.simpleName);
 
-    InstanceMirror groupAnnotation = parameter.metadata.firstWhere((annotation) =>
-        annotation.reflectee is GroupMarker, orElse: () => null);
+    InstanceMirror groupAnnotation = parameter.metadata.firstWhere(
+        (annotation) => annotation.reflectee is GroupMarker,
+        orElse: () => null);
 
     if (groupAnnotation != null) {
       GroupMarker group = groupAnnotation.reflectee;
       if (group is CombinedGroup) {
-        var combinedGroup = usage.addOptionGroup(title: group.title, help: group.help, hide: group.hide);
+        var combinedGroup = usage.addOptionGroup(
+            title: group.title, help: group.help, hide: group.hide);
 
         // Add all the options to the group.
         var groupOptions = group.getOptions();
         groupOptions.forEach(combinedGroup.addOption);
 
         // Store a mapping from the group to the parameter representing it.
-        script.usageOptionGroupParameterMap[usage][combinedGroup] = parameterName;
+        script.usageOptionGroupParameterMap[usage][combinedGroup] =
+            parameterName;
 
         // Reset the current group back to the default group.
         currentGroup = usage.optionGroups.first;
@@ -157,57 +160,69 @@ Usage getUsageFromFunction(MethodMirror methodMirror, DeclarationScript script, 
       }
 
       if (group is StartGroup) {
-        currentGroup = usage.addOptionGroup(title: group.title, help: group.help, hide: group.hide);
+        currentGroup = usage.addOptionGroup(
+            title: group.title, help: group.help, hide: group.hide);
       }
     }
 
     Option option;
     var type = parameter.type;
 
-    InstanceMirror argAnnotation = parameter.metadata.firstWhere((annotation) =>
-        annotation.reflectee is Option, orElse: () => null);
+    InstanceMirror argAnnotation = parameter.metadata.firstWhere(
+        (annotation) => annotation.reflectee is Option,
+        orElse: () => null);
 
-    if(argAnnotation != null) {
+    if (argAnnotation != null) {
       option = argAnnotation.reflectee;
-    } else if(type == reflectClass(bool)) {
+    } else if (type == reflectClass(bool)) {
       option = new Flag();
     } else {
       option = new Option();
     }
 
     var parser = option.parser;
-    if(parser == null) {
+    if (parser == null) {
       parser = getParserFromType(type);
     }
 
     var allowMultiple = option.allowMultiple;
 
-    if(parser == null && type.originalDeclaration == reflectClass(List)) {
+    if (parser == null && type.originalDeclaration == reflectClass(List)) {
       allowMultiple = true;
-      if(type.typeArguments.isNotEmpty){
+      if (type.typeArguments.isNotEmpty) {
         parser = getParserFromType(type.typeArguments.single);
       }
     }
 
     var defaultValue = option.defaultsTo;
-    if(defaultValue == null && parameter.hasDefaultValue) {
+    if (defaultValue == null && parameter.hasDefaultValue) {
       defaultValue = parameter.defaultValue.reflectee;
     }
 
-    var optionName = dashesToCamelCase.decode(option.name != null
-        ? option.name : parameterName);
+    var optionName = dashesToCamelCase
+        .decode(option.name != null ? option.name : parameterName);
 
     // Update option with any configuration detected in the parameter.
     // TODO: This is not very maintainable.
     // Use reflection instead to copy values over?
-    option = option is Flag ?
-        new Flag(help: option.help, abbr: option.abbr, hide: option.hide,
-            defaultsTo: defaultValue, negatable: option.negatable,
-            name: optionName) :
-        new Option(help: option.help, abbr: option.abbr,
-            defaultsTo: defaultValue, allowed: option.allowed,
-            allowMultiple: allowMultiple, hide: option.hide,
-            valueHelp: option.valueHelp, parser: parser, name: optionName);
+    option = option is Flag
+        ? new Flag(
+            help: option.help,
+            abbr: option.abbr,
+            hide: option.hide,
+            defaultsTo: defaultValue,
+            negatable: option.negatable,
+            name: optionName)
+        : new Option(
+            help: option.help,
+            abbr: option.abbr,
+            defaultsTo: defaultValue,
+            allowed: option.allowed,
+            allowMultiple: allowMultiple,
+            hide: option.hide,
+            valueHelp: option.valueHelp,
+            parser: parser,
+            name: optionName);
 
     script.usageOptionParameterMap[usage][optionName] = parameterName;
     currentGroup.addOption(option);
@@ -219,17 +234,17 @@ Usage getUsageFromFunction(MethodMirror methodMirror, DeclarationScript script, 
 }
 
 getParserFromType(TypeMirror typeMirror) {
-  if(typeMirror is ClassMirror &&
-      typeMirror.declarations.values.any((d) =>
-          d is MethodMirror && d.isStatic && d.simpleName == #parse)) {
+  if (typeMirror is ClassMirror &&
+      typeMirror.declarations.values.any(
+          (d) => d is MethodMirror && d.isStatic && d.simpleName == #parse)) {
     return (String item) => typeMirror.invoke(#parse, [item]).reflectee;
   }
   return null;
 }
 
-_addSubCommandsForClass(Usage usage, DeclarationScript script, TypeMirror typeMirror) {
-  if(typeMirror is ClassMirror) {
-
+_addSubCommandsForClass(
+    Usage usage, DeclarationScript script, TypeMirror typeMirror) {
+  if (typeMirror is ClassMirror) {
     var methods = typeMirror.instanceMembers.values;
 
     Map<MethodMirror, SubCommand> subCommands = {};
@@ -237,11 +252,9 @@ _addSubCommandsForClass(Usage usage, DeclarationScript script, TypeMirror typeMi
     methods.forEach((methodMirror) {
       var subCommand = methodMirror.metadata
           .map((im) => im.reflectee)
-          .firstWhere(
-              (v) => v is SubCommand,
-              orElse: () => null);
+          .firstWhere((v) => v is SubCommand, orElse: () => null);
 
-      if(subCommand != null) {
+      if (subCommand != null) {
         subCommands[methodMirror] = subCommand;
       }
     });
@@ -249,21 +262,19 @@ _addSubCommandsForClass(Usage usage, DeclarationScript script, TypeMirror typeMi
     subCommands.forEach((methodMirror, subCommand) {
       var commandName = dashesToCamelCase
           .decode(MirrorSystem.getName(methodMirror.simpleName));
-      getUsageFromFunction(
-          methodMirror,
-          script,
+      getUsageFromFunction(methodMirror, script,
           usage: usage.addCommand(commandName, subCommand));
     });
   }
 }
 
 _addCommandMetadata(Usage usage, DeclarationMirror declaration) {
-  BaseCommand command = getFirstMetadataMatch(
-      declaration, (metadata) => metadata is BaseCommand);
-  if(command is Command && usage.parent == null) {
-    usage.allowTrailingOptions = (command.allowTrailingOptions != null) ?
-        command.allowTrailingOptions :
-        false;
+  BaseCommand command =
+      getFirstMetadataMatch(declaration, (metadata) => metadata is BaseCommand);
+  if (command is Command && usage.parent == null) {
+    usage.allowTrailingOptions = (command.allowTrailingOptions != null)
+        ? command.allowTrailingOptions
+        : false;
   }
   var description = command == null ? '' : command.help;
   usage.description = description;
@@ -280,26 +291,19 @@ getFirstMetadataMatch(DeclarationMirror declaration, bool match(metadata)) {
 }
 
 void addOptionToParser(ArgParser parser, Option option) {
-
   var suffix;
 
-  var props = {
-    #abbr: option.abbr,
-    #help: option.help,
-    #hide: option.hide
-  };
+  var props = {#abbr: option.abbr, #help: option.help, #hide: option.hide};
 
-  if(option is Flag) {
+  if (option is Flag) {
     suffix = 'Flag';
-    props.addAll({
-      #negatable: option.negatable
-    });
+    props.addAll({#negatable: option.negatable});
   } else {
     suffix = 'Option';
 
     var allowed = option.allowed;
-    if(allowed != null && allowed is! Function) {
-      if(allowed is Map<String, String>) {
+    if (allowed != null && allowed is! Function) {
+      if (allowed is Map<String, String>) {
         allowed = allowed.keys.toList();
         props[#allowedHelp] = option.allowed;
       }
@@ -312,7 +316,7 @@ void addOptionToParser(ArgParser parser, Option option) {
 
   var namedParameters = props.keys.fold({}, ((ret, prop) {
     var value = props[prop];
-    if(value != null) {
+    if (value != null) {
       ret[prop] = value;
     }
     return ret;
@@ -320,25 +324,25 @@ void addOptionToParser(ArgParser parser, Option option) {
 
   var parserMethod = 'add$suffix';
 
-  reflect(parser).invoke(new Symbol(parserMethod), [option.name], namedParameters);
+  reflect(parser)
+      .invoke(new Symbol(parserMethod), [option.name], namedParameters);
 }
 
 // Returns a List whose elements are the required argument count, and whether
 // there is a Rest parameter.
 List getPositionalParameterInfo(MethodMirror methodMirror) {
-  var positionals = methodMirror.parameters.where((parameter) =>
-      !parameter.isNamed);
+  var positionals =
+      methodMirror.parameters.where((parameter) => !parameter.isNamed);
 
   // TODO: Find a better place for this check.
-  if(positionals.any((positional) => positional.isOptional)) {
+  if (positionals.any((positional) => positional.isOptional)) {
     throw new ArgumentError('Cannot use optional positional parameters.');
   }
   var requiredPositionals =
       positionals.where((parameter) => !parameter.isOptional);
 
   var isRest = false;
-  if(requiredPositionals.isNotEmpty) {
-
+  if (requiredPositionals.isNotEmpty) {
     var lastFuncPositional = requiredPositionals.last;
 
     var isRestAnnotated = lastFuncPositional.metadata
@@ -346,7 +350,7 @@ List getPositionalParameterInfo(MethodMirror methodMirror) {
         .any((metadata) => metadata is Rest);
     // TODO: How to check if the type is List or List<String> ?
     // var isList = lastFuncPositional.type == reflectClass(List);
-    isRest = isRestAnnotated;// || isList;
+    isRest = isRestAnnotated; // || isList;
   }
 
   return [requiredPositionals.length - (isRest ? 1 : 0), isRest];
@@ -354,21 +358,22 @@ List getPositionalParameterInfo(MethodMirror methodMirror) {
 
 getRestParameterIndex(MethodMirror methodMirror) {
   var positionalParameterInfo = getPositionalParameterInfo(methodMirror);
-  return positionalParameterInfo[1] ?
-      positionalParameterInfo[0] :
-        null;
+  return positionalParameterInfo[1] ? positionalParameterInfo[0] : null;
 }
 
 MethodMirror getUnnamedConstructor(ClassMirror classMirror) {
-  Iterable<MethodMirror> constructors = new List<MethodMirror>.from(
-    classMirror.declarations.values.where((d) => d is MethodMirror && d.isConstructor));
+  Iterable<MethodMirror> constructors = new List<MethodMirror>.from(classMirror
+      .declarations.values
+      .where((d) => d is MethodMirror && d.isConstructor));
 
-  return constructors.firstWhere((constructor) =>
-      constructor.constructorName == const Symbol(''), orElse: () => null);
+  return constructors.firstWhere(
+      (constructor) => constructor.constructorName == const Symbol(''),
+      orElse: () => null);
 }
 
-convertCommandInvocationToInvocation(CommandInvocation commandInvocation, MethodMirror method, DeclarationScript script, Usage usage, {Symbol memberName: #call}) {
-
+convertCommandInvocationToInvocation(CommandInvocation commandInvocation,
+    MethodMirror method, DeclarationScript script, Usage usage,
+    {Symbol memberName: #call}) {
   var positionals = commandInvocation.positionals;
 
   var named = {};
@@ -393,7 +398,7 @@ convertCommandInvocationToInvocation(CommandInvocation commandInvocation, Method
 }
 
 parseInput(String arg, {filesystem.FileSystem fileSystem}) {
-  if(fileSystem == null) {
+  if (fileSystem == null) {
     fileSystem = filesystem.fileSystem;
   }
   return _parseIOArg(arg, stdin, (stdin) => new _StdInput(stdin),
@@ -401,20 +406,20 @@ parseInput(String arg, {filesystem.FileSystem fileSystem}) {
 }
 
 parseOutput(String arg, {filesystem.FileSystem fileSystem}) {
-  if(fileSystem == null) {
+  if (fileSystem == null) {
     fileSystem = filesystem.fileSystem;
   }
   return _parseIOArg(arg, stdout, (stdout) => new _StdOutput(stdout),
       (file) => new _FileOutput(file), fileSystem);
 }
 
-_parseIOArg(String arg, stdio, convertStdio(stdio), convertFile(file), filesystem.FileSystem fileSystem) {
-
-  if(arg == '-') return convertStdio(stdio);
+_parseIOArg(String arg, stdio, convertStdio(stdio), convertFile(file),
+    filesystem.FileSystem fileSystem) {
+  if (arg == '-') return convertStdio(stdio);
 
   var file = fileSystem.getFile(arg);
 
-  if(!file.existsSync()) {
+  if (!file.existsSync()) {
     throw 'File path does not exist or is not a file: ${file.path}';
   }
 
@@ -422,7 +427,6 @@ _parseIOArg(String arg, stdio, convertStdio(stdio), convertFile(file), filesyste
 }
 
 class _FileInput implements Input {
-
   File _file;
 
   _FileInput(this._file);
@@ -434,7 +438,6 @@ class _FileInput implements Input {
 }
 
 class _StdInput implements Input {
-
   Stdin _stdin;
 
   _StdInput(this._stdin);
@@ -446,7 +449,6 @@ class _StdInput implements Input {
 }
 
 class _StdOutput implements Output {
-
   final IOSink _sink;
 
   _StdOutput(this._sink);
@@ -456,14 +458,13 @@ class _StdOutput implements Output {
 }
 
 class _FileOutput implements Output {
-
   final File _file;
 
   _FileOutput(this._file);
 
   String get path => _file.path;
   IOSink get sink {
-    if(_sink == null) _sink = _file.openWrite();
+    if (_sink == null) _sink = _file.openWrite();
     return _sink;
   }
 
@@ -473,36 +474,42 @@ class _FileOutput implements Output {
 List<String> _getStdinLines(Stdin stdin, [bool retainNewlines = false]) {
   var lines = [];
   String line;
-  while((line = stdin.readLineSync(retainNewlines: retainNewlines)) != null) {
+  while ((line = stdin.readLineSync(retainNewlines: retainNewlines)) != null) {
     lines.add(line);
   }
   return lines;
 }
 
 String formatColumns(
-    Iterable<Iterable<String>> cells,
-    Iterable<Function> formatters, {
-      int separateBy: 4
-    }) {
-
+    Iterable<Iterable<String>> cells, Iterable<Function> formatters,
+    {int separateBy: 4}) {
   formatters = formatters.map((f) => f == null ? (x) => x : f);
-  var widths = new IterableZip(cells).map((column) =>
-      column.isEmpty ? null : column.map((s) => s.length).reduce((a, b) => Comparable.compare(a, b) > 0 ? a : b));
-  var cellsWithMetadata = cells.map((line) => new IterableZip([line, widths, formatters]));
-  var formattedCells = cellsWithMetadata.map((lineCells) => lineCells.map((cellWithMetadata) {
-    String cell = cellWithMetadata[0];
-    int width = cellWithMetadata[1];
-    Function formatter = cellWithMetadata[2];
-    return formatter(cell) + (' ' * ((width - cell.length) + separateBy));
-  }));
+  var widths = new IterableZip(cells).map((column) => column.isEmpty
+      ? null
+      : column
+          .map((s) => s.length)
+          .reduce((a, b) => Comparable.compare(a, b) > 0 ? a : b));
+  var cellsWithMetadata =
+      cells.map((line) => new IterableZip([line, widths, formatters]));
+  var formattedCells =
+      cellsWithMetadata.map((lineCells) => lineCells.map((cellWithMetadata) {
+            String cell = cellWithMetadata[0];
+            int width = cellWithMetadata[1];
+            Function formatter = cellWithMetadata[2];
+            return formatter(cell) +
+                (' ' * ((width - cell.length) + separateBy));
+          }));
 
-  return formattedCells.map((formattedLineCells) => formattedLineCells.join()).join('\n');
+  return formattedCells
+      .map((formattedLineCells) => formattedLineCells.join())
+      .join('\n');
 }
 
 // TODO: Move to quiver.
-Map mapWhere(Map map, bool where(key, value)) => map.keys.fold({}, (result, key) {
-  if(where(key, map[key])) result[key] = map[key];
-  return result;
-});
+Map mapWhere(Map map, bool where(key, value)) =>
+    map.keys.fold({}, (result, key) {
+      if (where(key, map[key])) result[key] = map[key];
+      return result;
+    });
 
 typedef Nullary();

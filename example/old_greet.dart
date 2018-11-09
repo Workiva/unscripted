@@ -1,4 +1,3 @@
-
 // NOTE:  This is an example of how 'greet.dart' might be written *without*
 // unscripted.
 
@@ -10,29 +9,28 @@ import 'package:path/path.dart';
 ArgParser parser;
 
 main(arguments) {
-
   parser = new ArgParser()
-      ..addOption('salutation', defaultsTo: 'Hello')
-      ..addFlag('exclaim')
-      ..addFlag('help', abbr: 'h');
+    ..addOption('salutation', defaultsTo: 'Hello')
+    ..addFlag('exclaim')
+    ..addFlag('help', abbr: 'h');
 
   ArgResults results;
 
   try {
     results = parser.parse(arguments);
-  } catch(e) {
+  } catch (e) {
     print(e);
     printHelp();
     return;
   }
 
-  if(results['help']) {
+  if (results['help']) {
     printHelp();
     return;
   }
 
   var who = results.rest;
-  if(who.isEmpty){
+  if (who.isEmpty) {
     print("Must provide at least one name to greet.");
     printHelp();
     return;
@@ -41,17 +39,11 @@ main(arguments) {
   greet(who, salutation: results['salutation'], exclaim: results['exclaim']);
 }
 
-greet(
-    List<String> who,
-    {String salutation,
-     bool exclaim : false}) {
-
+greet(List<String> who, {String salutation, bool exclaim: false}) {
   print('$salutation ${who.join(' ')}${exclaim ? '!' : ''}');
-
 }
 
 printHelp() {
-
   var command = 'dart ${basename(Platform.script.path)}';
 
   print('''

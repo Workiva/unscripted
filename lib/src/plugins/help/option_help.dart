@@ -47,15 +47,13 @@ class OptionHelp {
   List<Function> columnFormatters = [abbrFormatter, optionPen, helpFormatter];
 
   static String abbrFormatter(String help) {
-    return help.splitMapJoin(
-        ',',
+    return help.splitMapJoin(',',
         onMatch: (match) => textPen(match.group(0)),
         onNonMatch: (String nonMatch) => optionPen(nonMatch));
   }
 
   static String helpFormatter(String help) {
-    return help.splitMapJoin(
-        new RegExp(r'<[^>]+>'),
+    return help.splitMapJoin(new RegExp(r'<[^>]+>'),
         onMatch: (match) => optionPen(match.group(0)),
         onNonMatch: (String nonMatch) => textPen(nonMatch));
   }
@@ -95,7 +93,9 @@ class OptionHelp {
           ? getGroupTitle(optionGroup.title)
           : index == 0
               ? null
-              : '_' * (columnWidths.fold(0, (prev, next) => prev + next) - gutterWidth);
+              : '_' *
+                  (columnWidths.fold(0, (prev, next) => prev + next) -
+                      gutterWidth);
       if (title != null) {
         if (buffer.isNotEmpty) buffer.write("\n");
         write(0, title, format: titlePen);
@@ -126,10 +126,10 @@ class OptionHelp {
         } else if (getAllowedValues(option) != null) {
           write(2, buildAllowedList(option));
         } else if (option.defaultsTo != null) {
-          var defaultsTo = option is Flag && option.defaultsTo == true ?
-              'on' :
-              option is! Flag ? option.defaultsTo : null;
-          if(defaultsTo != null) {
+          var defaultsTo = option is Flag && option.defaultsTo == true
+              ? 'on'
+              : option is! Flag ? option.defaultsTo : null;
+          if (defaultsTo != null) {
             write(2, '(defaults to "$defaultsTo")');
           }
         }
@@ -149,8 +149,8 @@ class OptionHelp {
 
   Iterable<String> getAllowedValues(Option option) {
     var allowed = option.allowed;
-    if(allowed is Iterable) return allowed;
-    if(allowed is Map) return allowed.keys;
+    if (allowed is Iterable) return allowed;
+    if (allowed is Map) return allowed.keys;
     return null;
   }
 
@@ -164,9 +164,7 @@ class OptionHelp {
 
   String getLongOption(String name, Option option) {
     var long = _getLongOption(name, option);
-    return option.valueHelp == null ?
-        long :
-        '$long=<${option.valueHelp}>';
+    return option.valueHelp == null ? long : '$long=<${option.valueHelp}>';
   }
 
   String _getLongOption(String name, Option option) {

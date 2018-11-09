@@ -1,21 +1,16 @@
-
 library invocation_maker;
 
 import 'dart:mirrors';
 
 abstract class InvocationMaker {
-
   final Symbol _member;
 
   InvocationMaker._(this._member);
 
-  factory InvocationMaker.getter(Symbol fieldName) =
-      _GetterInvocationMaker;
+  factory InvocationMaker.getter(Symbol fieldName) = _GetterInvocationMaker;
   factory InvocationMaker.setter(Symbol fieldName, value) =
       _SetterInvocationMaker;
-  factory InvocationMaker.method(
-      Symbol methodName,
-      List positionalArguments,
+  factory InvocationMaker.method(Symbol methodName, List positionalArguments,
       Map<Symbol, dynamic> namedArguments) = _MethodInvocationMaker;
 
   Invocation get invocation {
@@ -31,7 +26,6 @@ abstract class InvocationMaker {
 }
 
 class _GetterInvocationMaker extends InvocationMaker {
-
   _GetterInvocationMaker(Symbol fieldName) : super._(fieldName);
 
   _passThrough(InstanceMirror passThroughMirror) =>
@@ -39,7 +33,6 @@ class _GetterInvocationMaker extends InvocationMaker {
 }
 
 class _SetterInvocationMaker extends InvocationMaker {
-
   final _value;
 
   _SetterInvocationMaker(Symbol fieldName, this._value) : super._(fieldName);
@@ -51,14 +44,11 @@ class _SetterInvocationMaker extends InvocationMaker {
 }
 
 class _MethodInvocationMaker extends InvocationMaker {
-
   final List _positionalArguments;
   final Map<Symbol, dynamic> _namedArguments;
 
   _MethodInvocationMaker(
-      Symbol fieldName,
-      this._positionalArguments,
-      this._namedArguments)
+      Symbol fieldName, this._positionalArguments, this._namedArguments)
       : super._(fieldName);
 
   _passThrough(InstanceMirror passThroughMirror) =>
@@ -66,7 +56,6 @@ class _MethodInvocationMaker extends InvocationMaker {
 }
 
 class _InvocationPassThrough {
-
   Invocation lastInvocation;
 
   noSuchMethod(Invocation invocation) => lastInvocation = invocation;

@@ -1,9 +1,7 @@
-
 part of unscripted;
 
 /// Represents a script input, either [stdin] or a file.
 abstract class Input {
-
   /// Returns an input representing [stdin] if [arg] is '-',
   /// or a file if [arg] is a valid file path, else throws.
   static Input parse(String arg) => parseInput(arg);
@@ -23,7 +21,6 @@ abstract class Input {
 
 /// Represents a script output, either [stdout] or a file.
 abstract class Output {
-
   /// Returns an output which represents [stdout] if [output] is '-',
   /// or a file if [output] is a valid file path, else throws.
   static Output parse(String arg) => parseOutput(arg);
