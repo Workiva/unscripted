@@ -277,10 +277,11 @@ _addCommandMetadata(Usage usage, DeclarationMirror declaration) {
   }
   var description = command == null ? '' : command.help;
   usage.description = description;
-  Iterable<ArgExample> examples = declaration.metadata
-      .map((annotation) => annotation.reflectee)
-      .where((metadata) => metadata is ArgExample);
-  examples.forEach(usage.addExample);
+  for (var annotation in declaration.metadata) {
+    if (annotation.reflectee is ArgExample) {
+      usage.addExample(annotation.reflectee);
+    }
+  }
 }
 
 getFirstMetadataMatch(DeclarationMirror declaration, bool match(metadata)) {
@@ -313,7 +314,7 @@ void addOptionToParser(ArgParser parser, Option option) {
     });
   }
 
-  var namedParameters = props.keys.fold({}, ((ret, prop) {
+  Map<Symbol, dynamic> namedParameters = props.keys.fold({}, ((ret, prop) {
     var value = props[prop];
     if (value != null) {
       ret[prop] = value;

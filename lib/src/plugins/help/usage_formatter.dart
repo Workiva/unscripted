@@ -54,8 +54,8 @@ class TerminalUsageFormatter extends UsageFormatter {
     usageParts.add(optionsPlaceholder);
     if (usage.commands.isNotEmpty) usageParts.add(commandPlaceholder);
 
-    var positionalNames = usage.positionals
-        .map((positional) => positionalPen('<${positional.valueHelp}>'));
+    var positionalNames = usage.positionals.map(
+        (positional) => positionalPen('<${positional.valueHelp}>').toString());
     usageParts.addAll(positionalNames);
 
     var restName = usage.rest == null ? '' : usage.rest.valueHelp;
@@ -86,8 +86,9 @@ ${textPen("See '")}${_formatCommands()} $_HELP ${commandPen('[command]')}${textP
     var positionalsWithRest = usage.positionals;
     if (usage.rest != null)
       positionalsWithRest = positionalsWithRest.toList()..add(usage.rest);
-    positionalsWithRest =
-        positionalsWithRest.where((positional) => positional.help != null);
+    positionalsWithRest = positionalsWithRest
+        .where((positional) => positional.help != null)
+        .toList();
     if (positionalsWithRest.isNotEmpty) {
       usageString = '''
 $usageString

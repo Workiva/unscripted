@@ -417,7 +417,8 @@ main() {
   });
 }
 
-getGroupOptions() => [new Option(name: 'option'), new Flag(name: 'flag')];
+Iterable<Option> getGroupOptions() =>
+    [new Option(name: 'option'), new Flag(name: 'flag')];
 
 class CommandScriptTest {
   final bool flag;

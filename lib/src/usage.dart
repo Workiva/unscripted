@@ -122,7 +122,7 @@ class Usage {
       var usage = this;
       while (true) {
         if (usage.parent == null) {
-          _commandPath = path.reversed.toList();
+          _commandPath = path.reversed.map((o) => o.toString()).toList();
           break;
         }
         path.add(usage.name);
@@ -293,7 +293,8 @@ CommandInvocation convertArgResultsToCommandInvocation(
     ArgResults results, ArgParser parser) {
   var positionals = results.rest;
 
-  var options = results.options.fold({}, (options, optionName) {
+  Map<String, dynamic> options =
+      results.options.fold({}, (options, optionName) {
     if (results.wasParsed(optionName)) {
       options[optionName] = results[optionName];
     }
